@@ -1,43 +1,40 @@
 package dev.celestiacraft.libs.client.ponder;
 
-import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.catnip.math.Pointing;
 import net.createmod.ponder.api.PonderPalette;
-import net.createmod.ponder.api.element.ElementLink;
-import net.createmod.ponder.api.element.EntityElement;
 import net.createmod.ponder.api.element.TextElementBuilder;
 import net.createmod.ponder.api.level.PonderLevel;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
+import net.createmod.ponder.foundation.PonderScene;
 import net.createmod.ponder.foundation.element.InputWindowElement;
 import net.createmod.ponder.foundation.instruction.ShowInputInstruction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-public class NebulaSceneBuilder extends CreateSceneBuilder {
-	public static final Object OBJECT = new Object();
-	private final NebulaWorldInstructions world;
-
-	public NebulaSceneBuilder(SceneBuilder builder) {
-		super(builder);
-		world = new NebulaWorldInstructions();
-	}
+/**
+ * Create-free Ponder scene builder facade. Implementations:
+ * <ul>
+ * <li>{@link PonderNebulaSceneBuilder} - Ponder only, no Create required</li>
+ * <li>{@link CreateNebulaSceneBuilder} - extends Create's {@code CreateSceneBuilder}, exposes Create-specific helpers too</li>
+ * </ul>
+ */
+public interface INebulaSceneBuilder extends SceneBuilder {
+	Object OBJECT = new Object();
 
 	@Override
-	public @NotNull NebulaSceneBuilder.NebulaWorldInstructions world() {
-		return world;
+	@NotNull INebulaWorldInstructions world();
+
+	default void showStructure() {
+		showStructure(getScene().getBasePlateSize() << 1);
 	}
 
-	public void showStructure() {
-		showStructure(scene.getBasePlateSize() * 2);
-	}
-
-	public void showStructure(int height) {
+	default void showStructure(int height) {
+		PonderScene scene = getScene();
 		BlockPos start = new BlockPos(scene.getBasePlateOffsetX(), 0, scene.getBasePlateOffsetZ());
 		BlockPos size = new BlockPos(scene.getBasePlateSize() - 1, height, scene.getBasePlateSize() - 1);
 		Selection selection = scene.getSceneBuildingUtil().select().cuboid(start, size);
@@ -45,81 +42,70 @@ public class NebulaSceneBuilder extends CreateSceneBuilder {
 		world().showSection(selection, Direction.UP);
 	}
 
-	public void encapsulateBounds(BlockPos size) {
-		addInstruction((scene) -> {
-			PonderLevel sceneWorld = scene.getWorld();
+	default void encapsulateBounds(BlockPos size) {
+		addInstruction((ponder) -> {
+			PonderLevel sceneWorld = ponder.getWorld();
 			sceneWorld.getBounds().encapsulate(size);
 		});
 	}
 
-	public TextElementBuilder text(int duration, String text) {
+	default TextElementBuilder text(int duration, String text) {
 		return overlay().showText(duration)
 				.text(text);
 	}
 
-	public TextElementBuilder text(int duration, String text, Vec3 position) {
+	default TextElementBuilder text(int duration, String text, Vec3 position) {
 		return overlay().showText(duration)
 				.text(text)
 				.pointAt(position);
 	}
 
-	public TextElementBuilder sharedText(int duration, ResourceLocation location) {
+	default TextElementBuilder sharedText(int duration, ResourceLocation location) {
 		return overlay().showText(duration)
 				.sharedText(location);
 	}
 
-	public TextElementBuilder sharedText(int duration, ResourceLocation location, Vec3 position) {
+	default TextElementBuilder sharedText(int duration, ResourceLocation location, Vec3 position) {
 		return overlay().showText(duration)
 				.sharedText(location)
 				.pointAt(position)
 				.colored(PonderPalette.BLUE);
 	}
 
-	public InputWindowElement showControls(int duration, Vec3 pos, Pointing pointing) {
+	default InputWindowElement showControls(int duration, Vec3 pos, Pointing pointing) {
 		InputWindowElement element = new InputWindowElement(pos, pointing);
 		addInstruction(new ShowInputInstruction(element, duration));
 		return element;
 	}
 
-	public static void init5x5(SceneBuilder builder, SceneBuildingUtil util) {
+	static void init5x5(SceneBuilder builder, SceneBuildingUtil util) {
 		builder.configureBasePlate(0, 0, 5);
 		builder.scaleSceneView(0.9f);
 		builder.world().showSection(util.select().layer(0), Direction.UP);
 	}
 
-	public static void init7x7(SceneBuilder builder, SceneBuildingUtil util) {
+	static void init7x7(SceneBuilder builder, SceneBuildingUtil util) {
 		builder.configureBasePlate(0, 0, 7);
 		builder.scaleSceneView(0.75f);
 		builder.world().showSection(util.select().layer(0), Direction.UP);
 	}
 
-	public static void init9x9(SceneBuilder builder, SceneBuildingUtil util) {
+	static void init9x9(SceneBuilder builder, SceneBuildingUtil util) {
 		builder.configureBasePlate(0, 0, 9);
 		builder.scaleSceneView(0.6f);
 		builder.world().showSection(util.select().layer(0), Direction.UP);
 	}
 
-	public static void rotateAround(SceneBuilder builder, int duration, int angle) {
-		float times = 360f / angle;
+	static void rotateAround(SceneBuilder builder, int duration, int angle) {
+		float times = 360.0f / angle;
 
 		for (int i = 0; i < times; i++) {
 			rotate(builder, (int) (duration / times), angle);
 		}
 	}
 
-	public static void rotate(SceneBuilder builder, int time, int angle) {
+	static void rotate(SceneBuilder builder, int time, int angle) {
 		builder.rotateCameraY(angle);
 		builder.idle(time);
-	}
-
-	public class NebulaWorldInstructions extends WorldInstructions {
-		public void removeEntity(ElementLink<EntityElement> link) {
-			addInstruction((scene) -> {
-				EntityElement resolve = scene.resolve(link);
-				if (resolve != null) {
-					resolve.ifPresent(Entity::discard);
-				}
-			});
-		}
 	}
 }

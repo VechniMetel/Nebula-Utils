@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.ToIntFunction;
 
-public class BasicBlock extends Block implements IFluidInteractable, SimpleWaterloggedBlock {
+public class BasicBlock extends Block implements IFluidInteractable {
 	public static final DirectionProperty FACING = BlockStateProperties.FACING;
 	public static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -80,9 +80,10 @@ public class BasicBlock extends Block implements IFluidInteractable, SimpleWater
 
 	@Override
 	public @NotNull FluidState getFluidState(@NotNull BlockState state) {
-		if (useWaterlogged() && state.getValue(WATERLOGGED)) {
+		if (useWaterlogged() && state.hasProperty(WATERLOGGED) && state.getValue(WATERLOGGED)) {
 			return Fluids.WATER.getSource(false);
 		}
+
 		return super.getFluidState(state);
 	}
 
@@ -93,9 +94,11 @@ public class BasicBlock extends Block implements IFluidInteractable, SimpleWater
 			@NotNull BlockState neighborState,
 			@NotNull LevelAccessor level,
 			@NotNull BlockPos pos,
-			@NotNull BlockPos neighborPos) {
-
-		if (useWaterlogged() && state.getValue(WATERLOGGED)) {
+			@NotNull BlockPos neighborPos
+	) {
+		if (useWaterlogged()
+				&& state.hasProperty(WATERLOGGED)
+				&& state.getValue(WATERLOGGED)) {
 			level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
 		}
 
@@ -371,7 +374,7 @@ public class BasicBlock extends Block implements IFluidInteractable, SimpleWater
 	 * @return 方块亮度函数
 	 */
 	public static ToIntFunction<BlockState> litBlockEmission(int litLevel) {
-		return litBlockEmission(15, 0);
+		return litBlockEmission(litLevel, 0);
 	}
 
 	/**
