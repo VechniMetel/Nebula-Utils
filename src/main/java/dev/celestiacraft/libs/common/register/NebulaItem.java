@@ -12,13 +12,15 @@ public class NebulaItem {
 	static {
 		GEOLOGICAL_HAMMER = NebulaLibs.REGISTRATE.item("geological_hammer", BasicItem::new)
 				.properties((properties) -> {
-					return properties.rarity(Rarity.EPIC);
+					return properties.rarity(Rarity.EPIC)
+							.stacksTo(1);
 				})
 				.register();
 
 		BLOCK_ENTITY_TOOL = NebulaLibs.REGISTRATE.item("block_entity_tool", BasicItem::new)
 				.properties((properties) -> {
-					return properties.rarity(Rarity.EPIC);
+					return properties.rarity(Rarity.EPIC)
+							.stacksTo(1);
 				})
 				.register();
 	}
