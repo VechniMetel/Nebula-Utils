@@ -1,7 +1,6 @@
 package dev.celestiacraft.libs.common.recipe.anvil_craft;
 
 import dev.celestiacraft.libs.common.register.NebulaRecipe;
-import dev.celestiacraft.libs.common.register.NebulaSerializer;
 import lombok.Getter;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
@@ -67,7 +66,7 @@ public class AnvilCraftRecipe implements Recipe<Container> {
 
 	@Override
 	public @NotNull RecipeSerializer<?> getSerializer() {
-		return NebulaSerializer.ANVIL_CRAFT.get();
+		return NebulaRecipe.ANVIL_CRAFT.getSerializer();
 	}
 
 	@Override

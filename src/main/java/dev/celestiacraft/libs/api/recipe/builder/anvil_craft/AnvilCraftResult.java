@@ -1,7 +1,7 @@
 package dev.celestiacraft.libs.api.recipe.builder.anvil_craft;
 
 import com.google.gson.JsonObject;
-import dev.celestiacraft.libs.common.register.NebulaSerializer;
+import dev.celestiacraft.libs.common.register.NebulaRecipe;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +40,8 @@ public class AnvilCraftResult implements FinishedRecipe {
 		json.add("right", right.toJson());
 
 		JsonObject resultJson = new JsonObject();
-		resultJson.addProperty("item", ForgeRegistries.ITEMS.getKey(result.getItem()).toString());
+		ResourceLocation key = ForgeRegistries.ITEMS.getKey(result.getItem());
+		resultJson.addProperty("item", key.toString());
 
 		if (result.getCount() != 1) {
 			resultJson.addProperty("count", result.getCount());
@@ -68,7 +69,7 @@ public class AnvilCraftResult implements FinishedRecipe {
 
 	@Override
 	public @NotNull RecipeSerializer<?> getType() {
-		return NebulaSerializer.ANVIL_CRAFT.get();
+		return NebulaRecipe.ANVIL_CRAFT.getSerializer();
 	}
 
 	@Override

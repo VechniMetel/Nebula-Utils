@@ -6,7 +6,6 @@ import dev.celestiacraft.libs.client.tooltip.InlineItemTooltipComponent;
 import dev.celestiacraft.libs.common.material.Material;
 import dev.celestiacraft.libs.common.register.NebulaItem;
 import dev.celestiacraft.libs.common.register.NebulaRecipe;
-import dev.celestiacraft.libs.common.register.NebulaSerializer;
 import dev.celestiacraft.libs.compat.ICheckModLoaded;
 import dev.celestiacraft.libs.compat.ftbquests.client.FTBQuestsClientCompat;
 import dev.celestiacraft.libs.config.CommonConfig;
@@ -43,8 +42,7 @@ public class NebulaLibs {
 		REGISTRATE.registerEventListeners(bus);
 
 		NebulaItem.register();
-		NebulaRecipe.register(bus);
-		NebulaSerializer.register(bus);
+		NebulaRecipe.register();
 		NebulaConditionIds.register();
 
 		registerConfig(context);
